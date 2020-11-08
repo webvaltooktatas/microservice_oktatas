@@ -26,3 +26,9 @@ hs_err_pid*
 .idea
 target
 .DS_Store
+.gradle
+.maven
+build
+out
+*.iml
+*.ipl
