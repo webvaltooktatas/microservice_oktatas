@@ -1,0 +1,25 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<beans xmlns = "http://www.springframework.org/schema/beans"
+       xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation = "http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <!-- Ceg1 bean definicio -->
+    <bean id = "ceg1" class = "hu.webvalto.demo.domain.Ceg" scope="prototype" >
+        <constructor-arg index="0" value="Demo ceg 1"/>
+        <constructor-arg index="1" ref="cim1" />
+        <property name="leiras" value="Ez egy szuper ceg"/>
+    </bean>
+
+    <bean id="cim1" class="hu.webvalto.demo.domain.Cim">
+        <property name="varos" value="Budapest"/>
+        <property name="utca" value="Kossuth"/>
+        <property name="hazszam" value="37"/>
+    </bean>
+
+    <!-- Ceg2 bean definicio -->
+    <bean id = "ceg2" class = "hu.webvalto.demo.domain.Ceg" init-method="nyitas" destroy-method="felszamolas">
+        <constructor-arg index="0" value="Demo ceg 2"/>
+        <constructor-arg index="1" ref="cim1" />
+    </bean>
+</beans>
