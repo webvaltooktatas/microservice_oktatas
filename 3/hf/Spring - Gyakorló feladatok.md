@@ -1,4 +1,4 @@
-# Spring Bean - Gyakorló feladatok
+# Spring - Gyakorló feladatok
 
 ## 1.feladat
 
