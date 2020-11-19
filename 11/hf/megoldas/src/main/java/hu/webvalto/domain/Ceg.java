@@ -2,10 +2,20 @@ package hu.webvalto.domain;
 
 import org.springframework.beans.factory.annotation.Value;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 public class Ceg implements Adozo {
+    @NotBlank
+    @Size(min = 4, max = 10)
     private String nev;
+    @NotNull
     private Cim szekhely;
+    @Size(min = 8, max = 11)
+    @NotBlank
     private String adoszam;
+    @NotNull
     private Maganember tulajdonos;
     private Long evesBevetel;
     private Long evesKiadas;

@@ -3,9 +3,15 @@ package hu.webvalto.domain;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+import java.util.Objects;
 
 public class Maganember implements Adozo {
+    @NotBlank
+    @Size(min = 4, max = 10)
     private String nev;
+    @NotBlank
+    @Size(min = 8, max = 11)
     private String adoszam;
     private Long evesBevetel;
     private Long evesKiadas;
@@ -75,6 +81,24 @@ public class Maganember implements Adozo {
                 ", evesKiadas=" + evesKiadas +
                 ", cim=" + cim +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Maganember that = (Maganember) o;
+        return Double.compare(that.adokulcs, adokulcs) == 0 &&
+                Objects.equals(nev, that.nev) &&
+                Objects.equals(adoszam, that.adoszam) &&
+                Objects.equals(evesBevetel, that.evesBevetel) &&
+                Objects.equals(evesKiadas, that.evesKiadas) &&
+                Objects.equals(cim, that.cim);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nev, adoszam, evesBevetel, evesKiadas, cim, adokulcs);
     }
 
     private void init() {

@@ -2,22 +2,23 @@ package hu.webvalto.domain;
 
 import org.springframework.beans.factory.annotation.Value;
 
-public class Ceg implements Adozo {
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
+public class Maganember implements Adozo {
+    @NotBlank
+    @Size(min = 4, max=10)
     private String nev;
-    private Cim szekhely;
     private String adoszam;
-    private Maganember tulajdonos;
     private Long evesBevetel;
     private Long evesKiadas;
-    @Value("${ceg.adokulcs}")
-
+    private Cim cim;
+    @Value("${maganember.adokulcs}")
     private double adokulcs;
 
-    public Ceg(String nev, Cim szekhely, String adoszam, Maganember tulajdonos) {
+    public Maganember(String nev, String adoszam) {
         this.nev = nev;
-        this.szekhely = szekhely;
         this.adoszam = adoszam;
-        this.tulajdonos = tulajdonos;
     }
 
     public String getNev() {
@@ -28,28 +29,12 @@ public class Ceg implements Adozo {
         this.nev = nev;
     }
 
-    public Cim getSzekhely() {
-        return szekhely;
-    }
-
-    public void setSzekhely(Cim szekhely) {
-        this.szekhely = szekhely;
-    }
-
     public String getAdoszam() {
         return adoszam;
     }
 
     public void setAdoszam(String adoszam) {
         this.adoszam = adoszam;
-    }
-
-    public Maganember getTulajdonos() {
-        return tulajdonos;
-    }
-
-    public void setTulajdonos(Maganember tulajdonos) {
-        this.tulajdonos = tulajdonos;
     }
 
     public Long getEvesBevetel() {
@@ -68,28 +53,34 @@ public class Ceg implements Adozo {
         this.evesKiadas = evesKiadas;
     }
 
+    public Cim getCim() {
+        return cim;
+    }
+
+    public void setCim(Cim cim) {
+        this.cim = cim;
+    }
+
     public double getAdokulcs() {
         return adokulcs;
-    }
-
-    @Override
-    public String toString() {
-        return "Ceg{" +
-                "nev='" + nev + '\'' +
-                ", szekhely=" + szekhely +
-                ", adoszam='" + adoszam + '\'' +
-                ", tulajdonos=" + tulajdonos +
-                ", evesBevetel=" + evesBevetel +
-                ", evesKiadas=" + evesKiadas +
-                '}';
-    }
-
-    private void init() {
-        System.out.println("Ceg letre lett hozva!");
     }
 
     public void setAdokulcs(double adokulcs) {
         this.adokulcs = adokulcs;
     }
-}
 
+    @Override
+    public String toString() {
+        return "Maganember{" +
+                "nev='" + nev + '\'' +
+                ", adoszam='" + adoszam + '\'' +
+                ", evesBevetel=" + evesBevetel +
+                ", evesKiadas=" + evesKiadas +
+                ", cim=" + cim +
+                '}';
+    }
+
+    private void init() {
+        System.out.println("Maganember letre lett hozva!");
+    }
+}
