@@ -1,8 +1,8 @@
 package hu.webvalto.controller;
 
-import hu.webvalto.domain.Ceg;
+import hu.webvalto.domain.Maganember;
 import hu.webvalto.domain.Nyilatkozat;
-import hu.webvalto.repository.CegRepository;
+import hu.webvalto.repository.MaganemberRepository;
 import hu.webvalto.service.AdobevallasRiport;
 import hu.webvalto.service.NyilatkozatService;
 import org.slf4j.Logger;
@@ -26,77 +26,77 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/ceg")
-public class CegAdobevallasController {
+@RequestMapping("/maganember")
+public class MaganemberAdobevallasController {
     @Autowired
     private Logger logger;
-    private final CegRepository cegRepository;
+    private final MaganemberRepository maganemberRepository;
     private final NyilatkozatService nyilatkozatService;
     private final AdobevallasRiport adobevallasRiport;
 
     @Autowired
-    public CegAdobevallasController(CegRepository cegRepository, NyilatkozatService nyilatkozatService, AdobevallasRiport adobevallasRiport) {
-        this.cegRepository = cegRepository;
+    public MaganemberAdobevallasController(MaganemberRepository maganemberRepository, NyilatkozatService nyilatkozatService, AdobevallasRiport adobevallasRiport) {
+        this.maganemberRepository = maganemberRepository;
         this.nyilatkozatService = nyilatkozatService;
         this.adobevallasRiport = adobevallasRiport;
     }
 
     @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> cegLetrehozas(@Valid @RequestBody Ceg ceg) {
-        cegRepository.save(ceg);
+    public ResponseEntity<String> maganemberLetrehozas(@Valid @RequestBody Maganember maganember) {
+        maganemberRepository.save(maganember);
         return new ResponseEntity<>("Letrehozva", HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Ceg> cegLekerdezes(@PathVariable @Positive Long id) {
-        Optional<Ceg> ceg = cegRepository.findById(id);
-        if (!ceg.isPresent()) {
-            logger.error("Nem talalhato a keresett ceg");
+    public ResponseEntity<Maganember> maganemberLekerdezes(@PathVariable @Positive Long id) {
+        Optional<Maganember> maganember = maganemberRepository.findById(id);
+        if (!maganember.isPresent()) {
+            logger.error("Nem talalhato a keresett maganember");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(ceg.get(), HttpStatus.OK);
+        return new ResponseEntity<>(maganember.get(), HttpStatus.OK);
     }
 
     @PutMapping(value = "/{id}", produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> cegModositas(@PathVariable @Positive Long id, @RequestBody Ceg ceg) {
-        boolean letezik = cegRepository.existsById(id);
+    public ResponseEntity<String> maganemberModositas(@PathVariable @Positive Long id, @RequestBody Maganember maganember) {
+        boolean letezik = maganemberRepository.existsById(id);
         if (!letezik) {
-            logger.error("Nem talalhato a keresett ceg");
+            logger.error("Nem talalhato a keresett maganember");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        cegRepository.save(ceg);
+        maganemberRepository.save(maganember);
         return new ResponseEntity<>("Modositva", HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Ceg> cegTorlese(@PathVariable @Positive Long id) {
-        boolean letezik = cegRepository.existsById(id);
+    public ResponseEntity<Maganember> maganemberTorlese(@PathVariable @Positive Long id) {
+        boolean letezik = maganemberRepository.existsById(id);
         if (!letezik) {
-            logger.error("Nem talalhato a keresett ceg");
+            logger.error("Nem talalhato a keresett maganember");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        cegRepository.deleteById(id);
+        maganemberRepository.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping(value = "/{id}/nyilatkozatok")
     public ResponseEntity<List<Nyilatkozat>> maganemberNyilatkozatok(@PathVariable @Positive Long id) {
-        Optional<Ceg> ceg = cegRepository.findById(id);
-        if (!ceg.isPresent()) {
-            logger.error("Nem talalhato a keresett ceg");
+        Optional<Maganember> maganember = maganemberRepository.findById(id);
+        if (!maganember.isPresent()) {
+            logger.error("Nem talalhato a keresett maganember");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(nyilatkozatService.nyilatkozatokLekerdezese(ceg.get()), HttpStatus.OK);
+        return new ResponseEntity<>(nyilatkozatService.nyilatkozatokLekerdezese(maganember.get()), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}/adobevallas")
     public ResponseEntity<List<Nyilatkozat>> maganemberAdobevallas(@PathVariable @Positive Long id) {
-        Optional<Ceg> ceg = cegRepository.findById(id);
-        if (!ceg.isPresent()) {
+        Optional<Maganember> maganember = maganemberRepository.findById(id);
+        if (!maganember.isPresent()) {
             logger.error("Nem talalhato a keresett maganember");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        adobevallasRiport.lekerdezes(ceg.get());
+        adobevallasRiport.lekerdezes(maganember.get());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

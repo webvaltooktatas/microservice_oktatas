@@ -27,7 +27,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/ceg")
-public class CegAdobevallasController {
+public class cegAdobevallasController {
     @Autowired
     private Logger logger;
     private final CegRepository cegRepository;
@@ -35,7 +35,7 @@ public class CegAdobevallasController {
     private final AdobevallasRiport adobevallasRiport;
 
     @Autowired
-    public CegAdobevallasController(CegRepository cegRepository, NyilatkozatService nyilatkozatService, AdobevallasRiport adobevallasRiport) {
+    public cegAdobevallasController(CegRepository cegRepository, NyilatkozatService nyilatkozatService, AdobevallasRiport adobevallasRiport) {
         this.cegRepository = cegRepository;
         this.nyilatkozatService = nyilatkozatService;
         this.adobevallasRiport = adobevallasRiport;
