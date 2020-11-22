@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: /db/liquibase/schema/db-schema.yaml
+  - include:
+      file: /db/liquibase/data/db-testdata.yaml

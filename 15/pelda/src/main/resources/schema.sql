@@ -1,0 +1,3 @@
+CREATE TABLE maganember (id SERIAL NOT NULL AUTO_INCREMENT, nev VARCHAR(50), adoszam VARCHAR(12), cim_id INTEGER, eves_bevetel INTEGER, eves_kiadas INTEGER)
+CREATE TABLE ceg (id SERIAL NOT NULL AUTO_INCREMENT, cegnev VARCHAR(50), adoszam VARCHAR(12), szekhely_id INTEGER, tulajdonos_id INTEGER, eves_bevetel INTEGER, eves_kiadas INTEGER)
+CREATE TABLE cim (id SERIAL NOT NULL AUTO_INCREMENT, varos VARCHAR(50), utca VARCHAR(50), hazszam VARCHAR(50), iranyitoszam VARCHAR(10))

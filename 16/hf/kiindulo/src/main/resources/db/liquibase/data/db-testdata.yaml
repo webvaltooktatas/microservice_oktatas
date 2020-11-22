@@ -1,0 +1,135 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1605975109320-1
+      author: adamsaghy (generated)
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: hazszam
+                  value: '12'
+              - column:
+                  name: iranyitoszam
+                  value: '01235'
+              - column:
+                  name: utca
+                  value: Kossuth
+              - column:
+                  name: varos
+                  value: Kassa
+            tableName: cim
+        - insert:
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: hazszam
+                  value: '11'
+              - column:
+                  name: iranyitoszam
+                  value: '1111'
+              - column:
+                  name: utca
+                  value: Kossuth
+              - column:
+                  name: varos
+                  value: Budapest
+            tableName: cim
+  - changeSet:
+      id: 1605975109320-2
+      author: adamsaghy (generated)
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: adoszam
+                  value: '123456789'
+              - column:
+                  name: eves_bevetel
+              - column:
+                  name: eves_kiadas
+                  valueNumeric: 150
+              - column:
+                  name: nev
+                  value: Adam
+              - column:
+                  name: cim_id
+            tableName: maganember
+        - insert:
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: adoszam
+                  value: '987654321'
+              - column:
+                  name: eves_bevetel
+                  valueNumeric: 150000
+              - column:
+                  name: eves_kiadas
+              - column:
+                  name: nev
+                  value: Marti
+              - column:
+                  name: cim_id
+            tableName: maganember
+  - changeSet:
+      id: 1605975109320-3
+      author: adamsaghy (generated)
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: adoszam
+                  value: '9876543221'
+              - column:
+                  name: eves_bevetel
+                  valueNumeric: 3500000
+              - column:
+                  name: eves_kiadas
+                  valueNumeric: 157888
+              - column:
+                  name: cegnev
+                  value: Johirnevu Dohanybolt
+              - column:
+                  name: szekhely_id
+                  valueNumeric: 1
+              - column:
+                  name: tulajdonos_id
+                  valueNumeric: 1
+            tableName: ceg
+        - insert:
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: adoszam
+                  value: '9876543221'
+              - column:
+                  name: eves_bevetel
+                  valueNumeric: 3500000
+              - column:
+                  name: eves_kiadas
+                  valueNumeric: 157888
+              - column:
+                  name: cegnev
+                  value: Rosszhirnevu Dohanybolt
+              - column:
+                  name: szekhely_id
+                  valueNumeric: 2
+              - column:
+                  name: tulajdonos_id
+                  valueNumeric: 2
+            tableName: ceg
