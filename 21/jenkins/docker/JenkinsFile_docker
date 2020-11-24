@@ -1,0 +1,24 @@
+pipeline {
+    agent none
+    stages {
+        stage ('Env') {
+            agent {
+                docker {
+                    image 'openjdk:8-jre-slim'
+                }
+            }
+            steps {
+                echo 'Java verzio: '
+                sh 'java --version'
+            }
+        }
+        stage ('Run') {
+            agent {
+                 docker {
+                     image 'docker-alpine-jre'
+                 }
+            }
+            java -jar app.jar
+        }
+    }
+}
