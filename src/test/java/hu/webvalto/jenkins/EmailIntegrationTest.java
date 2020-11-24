@@ -17,6 +17,11 @@ public class EmailIntegrationTest {
     @LocalServerPort
     private int port;
 
+    @BeforeEach
+    public void init() {
+        testRestTemplate = new TestRestTemplate();
+    }
+
     @Test
     public void indexTest() {
         assertEquals("fooldal elerheto", "fooldal", testRestTemplate.getForObject("http://localhost:" + port + "/", String.class));
