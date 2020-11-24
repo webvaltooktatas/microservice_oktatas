@@ -11,9 +11,6 @@ import java.util.List;
 @RestController
 public class WebController {
 
-    @Autowired
-    private EmailRepository emailRepository;
-
     @GetMapping("/")
     public String index() {
         return "fooldal";
@@ -24,13 +21,5 @@ public class WebController {
         return "test";
     }
 
-    @PostMapping("/email")
-    public void ujEmail(@RequestBody Email email) {
-        emailRepository.save(email);
-    }
 
-    @GetMapping("/email")
-    public List<Email> emailList() {
-        return emailRepository.findAll();
-    }
 }
