@@ -27,10 +27,4 @@ public class EmailIntegrationTest {
         assertEquals("test elerheto", "test", testRestTemplate.getForObject("http://localhost:" + port + "/test", String.class));
     }
 
-    @Test
-    public void emailTest() {
-        assertEquals("email elerheto", "[]", testRestTemplate.getForObject("http://localhost:" + port + "/email", String.class));
-    }
-
-
 }
