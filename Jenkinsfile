@@ -3,12 +3,12 @@ pipeline {
     stages {
         stage('test') {
             steps {
-                sh 'gradle clean test'
+                echo 'TEST stage'
             }
         }
         stage('build') {
             steps {
-                sh 'gradle clean build -x test'
+                echo 'BUILD stage'
             }
         }
     }
