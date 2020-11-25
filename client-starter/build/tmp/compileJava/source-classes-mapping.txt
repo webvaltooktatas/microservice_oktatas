@@ -1,0 +1,6 @@
+org/springframework/security/oauth/samples/OAuthClientApplication.java
+ org.springframework.security.oauth.samples.OAuthClientApplication
+org/springframework/security/oauth/samples/config/SecurityConfig.java
+ org.springframework.security.oauth.samples.config.SecurityConfig
+org/springframework/security/oauth/samples/web/DefaultController.java
+ org.springframework.security.oauth.samples.web.DefaultController
