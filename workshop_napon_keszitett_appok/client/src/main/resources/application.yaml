@@ -1,0 +1,30 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          client_one:
+            provider: keycloak
+            client-id: client_one
+            client-secret: 93a25c1c-a887-447a-a0cb-b62c7b359310
+            authorization-grant-type: client_credentials
+            scope: read,write
+        provider:
+          keycloak:
+            authorization-uri: http://localhost:8080/auth/realms/test/protocol/openid-connect/auth
+            token-uri: http://localhost:8080/auth/realms/test/protocol/openid-connect/token
+
+resource-server:
+  base-uri: http://localhost:8092/
+
+server:
+  port: 8091
+
+management:
+  auditevents:
+    enabled: true
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: "*"

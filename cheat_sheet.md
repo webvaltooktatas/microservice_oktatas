@@ -88,13 +88,261 @@ spring.data.mongodb.port=27017
 spring.data.mongodb.host=localhost
 ```
 
-Liquibase
+## Client OAuth2RestTemplate-el
+port=8091
+```
+@Bean
+    public RestTemplate restTemplate() {
+        String url = "http://localhost:8080/auth/realms/test/protocol/openid-connect/token";
 
-**Cheat sheet**
+        ClientCredentialsResourceDetails resourceDetails = new ClientCredentialsResourceDetails();
+        resourceDetails.setGrantType("client_credentials");
+        resourceDetails.setAccessTokenUri(url);
+        resourceDetails.setClientId("client_one");
+        resourceDetails.setClientSecret("93a25c1c-a887-447a-a0cb-b62c7b359310");
+
+        List<String> scopes = new ArrayList<>();
+        scopes.add("read");
+        scopes.add("write");
+        resourceDetails.setScope(scopes);
+
+        RestTemplate restTemplate = new OAuth2RestTemplate(resourceDetails);
+        return restTemplate;
+```
+
+## Client RestTemplate + interceptorral
+
+**konfig**
+```
+spring:
+  thymeleaf:
+    cache: false
+  security:
+    oauth2:
+      client:
+        registration:
+          client_one:
+              provider: keycloak
+              client-id: client_one
+              client-secret: <CLIENT_SECRET>
+              authorization-grant-type: client_credentials
+              scope: read,write
+        provider:
+          keycloak:
+            authorization-uri: http://localhost:8080/auth/realms/test/protocol/openid-connect/auth
+            token-uri: http://localhost:8080/auth/realms/test/protocol/openid-connect/token
+
+resource-server:
+  base-uri: http://localhost:8092/
+```
+**OAuth2AuthorizedClientInterceptor**
+```
+@Component
+public class OAuth2AuthorizedClientInterceptor implements ClientHttpRequestInterceptor {
+    OAuth2AuthorizedClientManager manager;
+
+    public OAuth2AuthorizedClientInterceptor(OAuth2AuthorizedClientManager manager) {
+        this.manager = manager;
+    }
+
+    public ClientHttpResponse intercept(
+            HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
+        throws IOException {
+
+        Authentication principal = SecurityContextHolder.getContext().getAuthentication();
+
+        OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
+             .withClientRegistrationId("client_one")
+             .principal(principal)
+             .build();
+        OAuth2AuthorizedClient authorizedClient =
+            this.manager.authorize(authorizeRequest);
+
+        HttpHeaders headers = request.getHeaders();
+        headers.setBearerAuth(authorizedClient.getAccessToken().getTokenValue());
+
+        return execution.execute(request, body);
+    }
+}
+```
+
+**SecurityConfig**
+```
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+	@Override
+	public void configure(WebSecurity web) {
+		web
+			.ignoring()
+				.antMatchers("/webjars/**");
+	}
+
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http
+			.authorizeRequests()
+				.anyRequest().authenticated()
+				.and()
+			.formLogin()
+				.permitAll()
+				.and()
+			.oauth2Client();
+	}
+
+    @Bean
+    public UserDetailsService users() {
+        UserDetails user = User.withDefaultPasswordEncoder()
+            .username("test")
+            .password("test")
+            .roles("USER")
+            .build();
+        return  new InMemoryUserDetailsManager(user);
+    }
+}
+```
+
+**RestTemplateConfig**
+```
+@Configuration
+public class RestTemplateConfig {
+
+	@Bean
+	public RestTemplate rest(OAuth2AuthorizedClientInterceptor interceptor) {
+		RestTemplate rest = new RestTemplate();
+		rest.getInterceptors().add(interceptor);
+		return rest;
+	}
+
+	@Bean
+	OAuth2AuthorizedClientManager authorizedClientManager(ClientRegistrationRepository clientRegistrationRepository,
+															OAuth2AuthorizedClientRepository authorizedClientRepository) {
+		OAuth2AuthorizedClientProvider authorizedClientProvider =
+				OAuth2AuthorizedClientProviderBuilder.builder()
+						.clientCredentials()
+						.build();
+		DefaultOAuth2AuthorizedClientManager authorizedClientManager = new DefaultOAuth2AuthorizedClientManager(
+				clientRegistrationRepository, authorizedClientRepository);
+		authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
+
+		return authorizedClientManager;
+	}
+}
 
 ```
-https://github.com/liquibase/liquibase/blob/master/liquibase-integration-tests/src/test/resources/changelogs/yaml/common.tests.changelog.yaml
+## OAuth2 Resource server
 ```
+@EnableWebSecurity
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .mvcMatcher("/**")
+                .authorizeRequests()
+                .mvcMatchers("/maganember/*/nyilatkozatok", "/ceg/*/nyilatkozatok")
+                .access("hasAuthority('SCOPE_read')")
+                .and()
+                .oauth2ResourceServer()
+                .jwt();
+    }
+}
 ```
-https://github.com/liquibase/liquibase/blob/master/liquibase-core/src/test/resources/liquibase/parser/core/yaml/testCasesChangeLog.yaml
+**config**
+```
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://localhost:8080/auth/realms/test/protocol/openid-connect/certs
+```
+
+## Inject logger
+```
+@Bean
+    @Scope("prototype")
+    public Logger logger(InjectionPoint ip) {
+        return LoggerFactory.getLogger(ip.getMember().getDeclaringClass());
+    }
+```
+
+## MDC - CorrelationId
+
+**Logger pattern**
+```
+%X{correlationId}
+```
+
+**Read from Request and add to Response**
+```
+public class LogInterceptor extends HandlerInterceptorAdapter {
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String correlationId = request.getHeader("X-Correlation-Id");
+        if (correlationId == null) {
+            correlationId = getCorrelationId();
+        }
+        MDC.put("correlationId", correlationId);
+        response.addHeader("X-Correlation-Id", correlationId);
+        return super.preHandle(request, response, handler);
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        MDC.remove("correlationId");
+    }
+
+    private String getCorrelationId() {
+        return UUID.randomUUID().toString();
+    }
+}
+```
+
+**Configuration**
+```
+    @Bean
+    public LogInterceptor logInterceptor() {
+        return new LogInterceptor();
+    }
+
+    @Bean
+    public WebMvcConfigurer webConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addInterceptors(InterceptorRegistry registry) {
+                registry.addInterceptor(logInterceptor());
+            }
+        };
+    }
+```
+
+**Add to RestTemplate**
+
+**RestTemplateInterceptor**
+```
+public class RestTemplateHeaderModifierInterceptor
+        implements ClientHttpRequestInterceptor {
+    
+    @Override
+    public ClientHttpResponse intercept(HttpRequest request, byte[] body, 
+                                        ClientHttpRequestExecution execution) throws IOException {
+        request.getHeaders().add("X-Correlation-Id", MDC.get("CorrelationId"));
+        ClientHttpResponse response = execution.execute(request, body);
+        response.getHeaders().add("X-Correlation-Id", MDC.get("CorrelationId"));
+        return response;
+    }
+}
+```
+
+**Configuration**
+```
+@Bean
+    public RestTemplate restTemplate() {
+        RestTemplate restTemplate = new RestTemplate();
+ 
+        List<ClientHttpRequestInterceptor> interceptors
+          = restTemplate.getInterceptors();
+        if (CollectionUtils.isEmpty(interceptors)) {
+            interceptors = new ArrayList<>();
+        }
+        interceptors.add(new RestTemplateHeaderModifierInterceptor());
+        restTemplate.setInterceptors(interceptors);
+        return restTemplate;
+    }
 ```
